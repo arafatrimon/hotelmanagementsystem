@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>                        
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="${#strings.capitalizeWords(module)}">Form</h3>
+                                </div>
+                                <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" role="form">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <input type="text" th:field="*{id}" class="form-control hide" id="id">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="type">Type</label>
+                                            <input th:field="*{type}"  class="form-control" id="type" placeholder="Type of bill" list="typeList">
+                                            <datalist id="typeList" class="hide">
+                                                <option th:each="type : ${mclist}" th:value="${type}"></option>
+                                            </datalist>
+                                            <span 
+                                                th:if="${#fields.hasErrors('type')}"
+                                                th:errors="*{type}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="slipNo">Slip No.</label>
+                                            <input type="text" th:field="*{slipNo}" class="form-control" id="slipNo" placeholder="Enter Slip No.">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="billTo">Bill Receiver</label>
+                                            <input type="text" th:field="*{billTo}" class="form-control" id="billTo" placeholder="Name of bill receiver">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="payMethod">Payment Method</label>
+                                            <input type="text" th:field="*{payMethod}" class="form-control" id="payMethod" placeholder="example- bKash">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="month">Month of Bill</label>
+                                            <select th:field="*{month}" class="form-control" id="month">
+                                                <option value="1" th:selected="${entity.month == 1}">January</option>
+                                                <option value="2" th:selected="${entity.month == 2}">February</option>
+                                                <option value="3" th:selected="${entity.month == 3}">March</option>
+                                                <option value="4" th:selected="${entity.month == 4}">April</option>
+                                                <option value="5" th:selected="${entity.month == 5}">May</option>
+                                                <option value="6" th:selected="${entity.month == 6}">June</option>
+                                                <option value="7" th:selected="${entity.month == 7}">July</option>
+                                                <option value="8" th:selected="${entity.month == 8}">August</option>
+                                                <option value="9" th:selected="${entity.month == 9}">September</option>
+                                                <option value="10" th:selected="${entity.month == 10}">October</option>
+                                                <option value="11" th:selected="${entity.month == 11}">November</option>
+                                                <option value="12" th:selected="${entity.month == 12}">December</option>
+                                            </select>
+                                            <span th:if="${#fields.hasErrors('month')}" th:errors="*{month}" class="text-danger"> </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="year" >Year of Payment</label>
+                                            <input type="number" th:field="*{year}" class="form-control" id="year" 
+                                                   min="2000" max="2099" required>
+                                            <span th:if="${#fields.hasErrors('year')}" th:errors="*{year}" class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="amount">Amount of Bill</label>
+                                            <input type="number" th:field="*{amount}" class="form-control" id="amount">
+                                            <span 
+                                                th:if="${#fields.hasErrors('amount')}" 
+                                                th:errors="*{amount}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="payment">Paid amount</label>
+                                            <input type="number" th:field="*{payment}" class="form-control" id="payment">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="due">Due amount</label>
+                                            <input type="number" th:field="*{due}" class="form-control" id="due">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="date">Date of bill creation</label>
+                                            <input type="date" th:field="*{date}" class="form-control" id="date">
+                                        </div> 
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer th:replace="~{fragments/shared/footer :: footer}"></footer>
+        </div>
+        <script>
+//            document.getElementById("saveBtn").addEventListener("click", function (event) {
+//                event.preventDefault();
+//                saveData();
+//            });
+            document.getElementById("amount").addEventListener("input", count);
+            document.getElementById("payment").addEventListener("input", count);
+            function count() {
+                var amount = document.getElementById("amount").value;
+                var payment = document.getElementById("payment").value;
+                document.getElementById("due").value = amount - payment;
+
+            }
+        </script>
+    </body>
+</html>

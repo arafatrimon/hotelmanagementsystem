@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <link rel="stylesheet" href="http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    </head>
+    <body  class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>       
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <th:block th:if="${data}">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header">
+                                        <h3 class="card-title" th:text="${#strings.capitalizeWords(module)}"></h3>
+                                    </div>
+                                    <div class="card-body" th:with="
+                                         keys = ${data.get('keys')}, 
+                                         values = ${data.get('values')},
+                                         list = ${data.get('list')}, 
+                                         photo = ${data.get('photo')}, 
+                                         logo = ${data.get('logo')}
+                                         ">
+                                        <div th:if="${photo} or ${largePhoto} or ${smallPhoto} or ${logo}" class="row center">
+                                            <div class="col-3"></div>
+                                            <div class="col-6">
+                                                <div class="container">
+                                                    <img th:if="${photo}" th:src="@{'/uploads/'+${photo}}" 
+                                                         class="img-fluid"/>
+                                                    <img th:if="${logo}" th:src="@{'/uploads/'+${logo}}" 
+                                                         class="img-fluid standard-image"/>
+                                                </div>
+                                                <div class="container p-1">
+                                                    <a class="btn btn-info btn-sm"
+                                                       th:href="@{'/'+${data.get('class')}+'/upload/'+${values.get('id')}}">
+                                                        <i class="fas fa-pencil-alt">
+                                                        </i>
+                                                        Edit Photo
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-3"></div>
+                                        </div> 
+                                        <th:block th:each="key : ${keys}" th:if="${key != 'id'}">
+                                            <h5 th:text="${#strings.capitalizeWords(key)}"></h5>
+                                            <p th:text="${values.get(key)}"></p>
+                                        </th:block>
+                                        <div th:if="${list}" class="row"> 
+                                            <div class="row">  
+                                                <div class="col-12">
+                                                    <div class="card">
+                                                        <div class="card-header bg-light">  
+                                                            <h5 th:text="${#strings.capitalizeWords(list.get('class')) + ' list'}"
+                                                                class="text-center"></h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <th:block th:replace="~{fragments/table :: dataTable(${list})}"></th:block>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="center">
+                                            <a class="btn btn-info btn-sm"
+                                               th:href="@{'/'+${data.get('class')}+'/update/'+${values.get('id')}}">
+                                                <i class="fas fa-pencil-alt">
+                                                </i>
+                                                Edit Information.
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> 
+                All rights reserved.
+            </footer>
+        </div>
+        <script th:if="${list}" src="http://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>        
+        <script th:if="${list}">
+            $(document).ready(function () {
+                $('#listTable').DataTable();
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head> 
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <link th:if="${data}" rel="stylesheet" th:href="@{/dist/css/jquery.dataTables.min.css}">
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="container">
+                        <div class="row mb-20">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Hostel Balance Sheet</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="year" >Select year</label>
+                                                <input type="number" class="form-control" id="hostelYear" name="year" min="1970" max="2099" required>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="button" id="hostelBtn" class="btn btn-primary">Generate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Branch Balance Sheet</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="year" >Select year</label>
+                                                <input type="number" class="form-control" id="branchYear" name="year" min="1970" max="2099" required>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="button" id="branchBtn" class="btn btn-primary">Generate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <embed id="embedPdf" src="" type="application/pdf" width="100%" height="600px" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> All rights reserved.
+            </footer>
+        </div>
+
+        <script th:inline="javascript">
+            document.getElementById("branchBtn").addEventListener("click", function (event) {
+                event.preventDefault();
+                let year = document.getElementById("branchYear").value;
+                getPdfReport("/report/generate", "branch", year);
+            });
+            document.getElementById("hostelBtn").addEventListener("click", function (event) {
+                event.preventDefault();
+                let year = document.getElementById("hostelYear").value;
+                getPdfReport("/report/generate", "hostel", year);
+            });
+            function getPdfReport(url, scope, year) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        document.getElementById("embedPdf").src = window.URL.createObjectURL(this.response);
+                    }
+                };
+                url += "?year=" + year + "&type=bs&scope=" + scope;
+                request.open("POST", url, true);
+                request.responseType = "blob";
+                request.setRequestHeader("Content-type", "application/pdf");
+                request.setRequestHeader([(${'"' + _csrf.headerName + '"'})], [(${'"' + _csrf.token + '"'})]);
+                request.send();
+            }
+        </script>
+    </body>
+</html>

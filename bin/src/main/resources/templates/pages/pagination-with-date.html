@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head> 
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>                        
+                    </div>
+                    <div th:if="${data}" class="row">
+                        <div class="col-12">
+                            <!--/.Filter Nav-->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <div class="card">                                                
+                                                <div class="card-body">
+                                                    <nav class="nav flex-column">
+                                                        <div class="card-header">
+                                                            <h5>Filter</h5>
+                                                        </div>
+                                                        <form action="#" th:action="@{'/'+${data.get('class')}+'/filter'}" method="get" 
+                                                              role="form">
+                                                            <div class="form-group">
+                                                                <label for="start">From</label>
+                                                                <input type="date" name="startDate" 
+                                                                       th:value="${startDate != null ? startDate : ''}" 
+                                                                       class="form-control" id="start" >
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="end">To</label>
+                                                                <input type="date" name="endDate" th:value="${endDate != null ? endDate : ''}" 
+                                                                       class="form-control" id="end" >
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                        </form>
+                                                    </nav>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-9">
+                                            <th:block th:replace="~{fragments/pagination-table :: table}"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> 
+                All rights reserved.
+            </footer>
+        </div>
+    </body>
+</html>

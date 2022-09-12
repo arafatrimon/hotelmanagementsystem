@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="branch_balance_sheet" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ade88042-9dfa-47d5-b339-0f242c87e7ac">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="end_date" class="java.lang.String"/>
+	<parameter name="start_date" class="java.lang.String"/>
+	<parameter name="branch" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[SELECT net_profit, initial_capital, furniture, cash_at_hand, inventory, prepaid_expense, depreciation, intangible_asset, account_receivable,
+(remaining * 0.4) as long_term_debt, (remaining * 0.3) as account_payable, (remaining * 0.2) as additional_capital, (remaining * 0.1) as accrued_expenses,
+(SELECT name FROM branch WHERE id = $P{branch}) AS branch,
+(SELECT name FROM hostel WHERE id = (SELECT hostel FROM branch WHERE id = $P{branch})) AS hostel
+FROM(
+SELECT
+net_profit, initial_capital, (furniture + cash_at_hand + inventory + prepaid_expense - depreciation + intangible_asset + account_receivable - net_profit - initial_capital ) as remaining,
+furniture, cash_at_hand, inventory, prepaid_expense, depreciation, intangible_asset, account_receivable
+FROM(
+SELECT
+net_profit, initial_capital,
+(200000 + (initial_capital * 0.4) + (net_profit * 0.3)) as furniture,
+(50000 + (initial_capital * 0.15) + (net_profit * 0.2)) AS cash_at_hand,
+(30000 + (initial_capital * 0.2) + (net_profit * 0.2)) AS inventory,
+(10000 + (initial_capital * 0.075) + (net_profit * 0.2)) AS prepaid_expense,
+(40000 + (initial_capital * 0.175) + (net_profit * 0.1)) as account_receivable,
+((200000 + (initial_capital * 0.4) + (net_profit * 0.3))*0.1) AS depreciation,
+100000 as intangible_asset
+FROM(
+SELECT (c_fees + c_deposits - c_bazar - c_ebill - c_salary - c_bill - c_cost) AS net_profit,
+(1000000 + p_fees + p_deposits - p_bazar - p_ebill - p_salary - p_bill - p_cost) as initial_capital
+FROM(
+SELECT
+(SELECT COALESCE(SUM(total),0) FROM Bazar b WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and b.branch = $P{branch}) AS c_bazar,
+(SELECT COALESCE(SUM(total),0) FROM Electricity_Bills b  WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and b.branch = $P{branch}) AS c_ebill,
+(SELECT COALESCE(SUM(amount),0) FROM Salary b WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and b.employee in (SELECT id FROM employee WHERE branch = $P{branch} AND is_active = true)) AS c_salary,
+(SELECT COALESCE(SUM(amount),0) FROM Bills b WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and b.branch = $P{branch}) AS c_bill,
+(SELECT COALESCE(SUM(amount),0) FROM Cost b WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and b.branch = $P{branch}) AS c_cost,
+(SELECT COALESCE(SUM(amount),0) FROM Student_Payment b WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and student IN(SELECT e.id from Student e WHERE e.branch = $P{branch})) AS c_fees,
+(SELECT COALESCE(SUM(amount),0) FROM Deposit b  WHERE b.date BETWEEN $P{start_date} and '2020-12-31' and b.branch = $P{branch}) AS c_deposits,
+(SELECT COALESCE(SUM(total),0) FROM Bazar b WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and b.branch = $P{branch}) AS p_bazar,
+(SELECT COALESCE(SUM(total),0) FROM Electricity_Bills b  WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and b.branch = $P{branch}) AS p_ebill,
+(SELECT COALESCE(SUM(amount),0) FROM Salary b WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and b.employee in (SELECT id FROM employee WHERE branch = $P{branch} AND is_active = true)) AS p_salary,
+(SELECT COALESCE(SUM(amount),0) FROM Bills b WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and b.branch = $P{branch}) AS p_bill,
+(SELECT COALESCE(SUM(amount),0) FROM Cost b WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and b.branch = $P{branch}) AS p_cost,
+(SELECT COALESCE(SUM(amount),0) FROM Student_Payment b WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and student IN(SELECT e.id from Student e WHERE e.branch = $P{branch})) AS p_fees,
+(SELECT COALESCE(SUM(amount),0) FROM Deposit b  WHERE b.date BETWEEN (select date from branch where id = $P{branch})  and (str_to_date($P{start_date},'%Y-%m-%d')-1) and b.branch = $P{branch}) AS p_deposits
+FROM dual
+) as incomes_and_costs
+) as capital_and_net_income
+) as pre_balance_sheet
+) as balance_sheet]]>
+	</queryString>
+	<field name="net_profit" class="java.lang.Double"/>
+	<field name="initial_capital" class="java.lang.Double"/>
+	<field name="furniture" class="java.lang.Double"/>
+	<field name="cash_at_hand" class="java.lang.Double"/>
+	<field name="inventory" class="java.lang.Double"/>
+	<field name="prepaid_expense" class="java.lang.Double"/>
+	<field name="depreciation" class="java.lang.Double"/>
+	<field name="intangible_asset" class="java.lang.Long"/>
+	<field name="account_receivable" class="java.lang.Double"/>
+	<field name="long_term_debt" class="java.lang.Double"/>
+	<field name="account_payable" class="java.lang.Double"/>
+	<field name="additional_capital" class="java.lang.Double"/>
+	<field name="accrued_expenses" class="java.lang.Double"/>
+	<field name="branch" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hostel" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="totalCurrentAsset" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{cash_at_hand}+$F{inventory}+$F{prepaid_expense}+$F{account_receivable}]]></variableExpression>
+	</variable>
+	<variable name="totalAssets" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{furniture}+$F{cash_at_hand}+$F{inventory}+$F{prepaid_expense}-$F{depreciation}+$F{intangible_asset}+$F{account_receivable}]]></variableExpression>
+	</variable>
+	<variable name="formattedDepreciation" class="java.lang.String">
+		<variableExpression><![CDATA['('+$F{depreciation}.toString()+')']]></variableExpression>
+	</variable>
+	<variable name="totalCurrentLiabilities" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{account_payable} + $F{accrued_expenses}]]></variableExpression>
+	</variable>
+	<variable name="totalLiabilities" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{long_term_debt} + $F{account_payable} +  $F{accrued_expenses}]]></variableExpression>
+	</variable>
+	<variable name="totalLiabilityEquity" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{net_profit}+$F{initial_capital}+$F{additional_capital}+$F{long_term_debt}+$F{account_payable}+$F{accrued_expenses}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80">
+			<staticText>
+				<reportElement mode="Opaque" x="1" y="36" width="554" height="24" backcolor="#CCCCCC" uuid="ba15d174-f899-4433-bace-c2c23439408f"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Balance Sheet]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="1" y="2" width="554" height="18" backcolor="#CCCCCC" uuid="c4553d83-c89e-4199-b368-ae1278acb247"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hostel}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="1" y="19" width="554" height="18" backcolor="#CCCCCC" uuid="d7996f6e-e72f-496d-a8c5-774d1c842a27"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{branch}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="1" y="59" width="554" height="20" backcolor="#CCCCCC" uuid="3ae3a7eb-5cf8-457f-a654-17a8b6d1afe4"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["31 December "+$P{end_date}.substring( 0, 4 )]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="413" splitType="Stretch">
+			<staticText>
+				<reportElement x="8" y="11" width="100" height="20" uuid="bd1c9f08-86ab-46f8-bf9b-141367789a81"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Assets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="33" width="100" height="20" uuid="a8f27d52-1f6c-4673-a77e-20cc20e1aa06"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Current Assets]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="57" width="96" height="20" uuid="1690dc62-dd0f-4752-b669-8cf8cc6f77fa"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cash_at_hand}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="79" width="96" height="20" uuid="9a36d988-aa82-44bc-a281-956767962733"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{account_receivable}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="79" width="138" height="20" uuid="48349461-74ba-41b3-88de-8d16015596dc"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Account Receivable]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="101" width="96" height="20" uuid="30eaceb0-5f6d-4525-8141-b48427192f56"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inventory}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="101" width="138" height="20" uuid="69a70916-9641-453b-8521-b4409bc67c4d"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Inventory]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="151" width="263" height="1" uuid="ac1a818d-8849-4d55-a539-6281d855ffda"/>
+			</line>
+			<line>
+				<reportElement x="1" y="178" width="263" height="1" uuid="d93f145e-6425-43cb-9dec-d2b39c6537ec"/>
+			</line>
+			<textField>
+				<reportElement x="168" y="155" width="96" height="20" uuid="9e4ef564-2d0c-4b5d-b58a-91ee04ccd072"/>
+				<textElement textAlignment="Right">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalCurrentAsset}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="123" width="96" height="20" uuid="88851518-d8da-488c-8ccb-13138ddb11bd"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prepaid_expense}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="123" width="138" height="20" uuid="aa84ec42-61e7-4f15-a60d-a1c09d678116"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Prepaid Expense]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="155" width="138" height="20" uuid="067c64cc-d855-4b3c-8fdb-c32e9d016ae2"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Current Assets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="190" width="160" height="20" uuid="8af6f88e-3b42-4858-afeb-b1cfdb72caa2"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Property and Equipment]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="215" width="96" height="20" uuid="8ca5a01c-f0a9-4e73-b5aa-370a92512d33"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{furniture}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="215" width="138" height="20" uuid="e88cf8d7-2f86-48a0-88ba-866c2cec2b0d"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Furniture and Improvements]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="270" width="160" height="20" uuid="9cda15b5-5065-445e-9600-73e3d75ffff2"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Other Assets]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="293" width="96" height="20" uuid="c950d771-646a-4cf8-a436-dfd25936ec83"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{intangible_asset}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="30" y="293" width="138" height="20" uuid="d139def8-f6be-4445-982f-8fe641aef17e"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Intangible Assets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="11" width="172" height="20" uuid="0e7a471c-c0a2-4800-9f46-5c33f8ac7f7d"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Liabilities and Shareholder's Equity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="33" width="172" height="20" uuid="f9d7ce3e-60a0-477b-b062-6877959b5482"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Current Liabilities]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="316" y="57" width="126" height="20" uuid="cc9145de-f542-4aa6-9a04-ce710c1af48e"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Account Payables]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="57" width="138" height="20" uuid="b82571f8-701a-4954-97ad-fe13f5a4c184"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Cash and Cash Equivalents]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="338" width="100" height="20" uuid="f9244671-4eb5-4389-8aea-436544f2a7fd"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Assets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="237" width="138" height="20" uuid="99b8735a-00a3-4559-9ba5-c4254f77a68e"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Depreciation]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="237" width="96" height="20" uuid="6b21ee43-0985-4806-9c6c-5201260036cd"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{formattedDepreciation}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="338" width="96" height="20" uuid="c3cd2afc-8cb7-438c-9878-316ddba06161"/>
+				<textElement textAlignment="Right">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalAssets}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="168" y="335" width="96" height="1" uuid="bb14b427-b5c9-45d0-9393-de29d6ac4dc2"/>
+			</line>
+			<line>
+				<reportElement x="168" y="364" width="96" height="1" uuid="873094cc-de07-4b53-a455-e0ce704d89a8"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="168" y="360" width="96" height="1" uuid="9ab66aec-e780-4d80-a403-41281be48c8d"/>
+			</line>
+			<textField>
+				<reportElement x="442" y="57" width="107" height="20" uuid="45c5c461-0cc0-473c-a8ce-f7a3b9fcd69d"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{account_payable}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="316" y="81" width="126" height="20" uuid="61202183-505c-46f4-9573-8e6b0a366186"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Accrued Expense]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="442" y="81" width="107" height="20" uuid="393422a2-6271-44b7-9702-db3acef16f4f"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{accrued_expenses}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="290" y="116" width="259" height="1" uuid="63f09ef7-cdd7-4fd9-91e0-2b9423102165"/>
+			</line>
+			<line>
+				<reportElement x="290" y="143" width="259" height="1" uuid="f0b20a19-0018-49a9-a56a-4103e70a7ba4"/>
+			</line>
+			<staticText>
+				<reportElement x="316" y="120" width="126" height="20" uuid="26ff0454-e3f3-43a2-b651-a3c91014558c"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Current Liabilities]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="442" y="338" width="107" height="20" uuid="dc98863d-5893-4bca-9412-2e06bf816f23"/>
+				<textElement textAlignment="Right">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalLiabilityEquity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="442" y="120" width="107" height="20" uuid="f12482d6-b4c0-42a1-92d8-e85f32e5996a"/>
+				<textElement textAlignment="Right">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalCurrentLiabilities}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="316" y="152" width="126" height="20" uuid="61d520ab-1c4a-4704-beb3-6716b7fc1c84"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Long Term Debt]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="442" y="152" width="107" height="20" uuid="c7ec40fc-aa08-4530-a1e1-613793363edb"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{long_term_debt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="290" y="190" width="152" height="20" uuid="a269d797-4745-4631-9cf2-7619599603a5"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Liabilities]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="442" y="190" width="107" height="20" uuid="183cee1d-c016-4b46-a977-613636a63e00"/>
+				<textElement textAlignment="Right">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalLiabilities}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="442" y="186" width="107" height="1" uuid="131cf607-f68c-4db5-9351-2bdedb92bd94"/>
+			</line>
+			<line>
+				<reportElement x="442" y="212" width="107" height="1" uuid="25313aca-f3ef-4fee-855b-18548abfca62"/>
+			</line>
+			<staticText>
+				<reportElement x="290" y="225" width="152" height="20" uuid="c92bed19-6db7-492e-adcb-a36fc8c57d41"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stakeholder's Equity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="316" y="249" width="126" height="20" uuid="ce0795aa-f35f-443a-9db5-ba737b95a283"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Initial Capital]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="316" y="271" width="126" height="20" uuid="29cb7973-5b0e-459b-a2fc-42d7267ceaad"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Additional Capital]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="316" y="293" width="126" height="20" uuid="189b6ea3-6e8a-42d6-87bd-8378d825404a"/>
+				<textElement>
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Retained Earnings]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="442" y="271" width="107" height="20" uuid="ed3ceec6-71b7-48e1-a8c4-6aac01e5d752"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{additional_capital}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="442" y="293" width="107" height="20" uuid="b19676d1-4b44-42e3-bec5-23a757a2da62"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{net_profit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="442" y="249" width="107" height="20" uuid="842bcc49-f605-4b8b-bac7-f6f29a88a830"/>
+				<textElement textAlignment="Right">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{initial_capital}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="281" y="338" width="161" height="20" uuid="d680f5c9-35aa-4d8f-9b84-6f2ad8b4c2df"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Liability and Equity]]></text>
+			</staticText>
+			<line>
+				<reportElement x="442" y="336" width="107" height="1" uuid="6569d180-0a2b-453f-834c-7cc3f038ff70"/>
+			</line>
+			<line>
+				<reportElement x="442" y="365" width="107" height="1" uuid="818d8bde-085c-49be-b585-f55715102fb8"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="442" y="361" width="107" height="1" uuid="7a9ee2f1-2338-4b84-96bb-f929f340ef06"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

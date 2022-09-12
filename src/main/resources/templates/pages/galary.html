@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head> 
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+                <!-- Main content -->
+                <section class="content" th:with="
+                         size = ${size == null} ? 9 : ${size},
+                         searchParam = ${searchParam != null} ? ${searchParam} : '',
+                         sortCriteria = ${sortCriteria != null} ? ${sortCriteria} : '',
+                         sortDirection = ${sortDirection != null} ? ${sortDirection} : '',
+                         pageUrl = ${pageLink} + '?searchParam=' + ${searchParam}
+                         ">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div th:if="${photos}" class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                        <!--<a class="navbar-brand" href="#">Navbar</a>-->
+                                        <button class="navbar-toggler" type="button" data-toggle="collapse" 
+                                                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
+                                                aria-expanded="false" aria-label="Toggle navigation">
+                                            <span class="navbar-toggler-icon"></span>
+                                        </button>
+                                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                            <ul class="navbar-nav mr-auto"> 
+                                                <li class="nav-item dropdown">
+                                                    <a class="nav-link dropdown-toggle" href="#" id="pageSizeButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Page Size
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="pageSizeButton" th:with="
+                                                         pageSizeUrl = ${pageUrl}+'&sortCriteria='+${sortCriteria}+'&sortDirection='+${sortDirection}+'&page=0'">
+                                                        <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=9'}">9</a>
+                                                        <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=12'}">12</a>
+                                                        <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=15'}">15</a>
+                                                        <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=18'}">21</a>
+                                                        <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=30'}">30</a>
+                                                    </div>
+                                                </li>
+                                                <li class="nav-item dropdown">
+                                                    <a class="nav-link dropdown-toggle" href="#" id="sortCriteriaButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Sort by
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="sortCriteriaButton">
+                                                        <a class="dropdown-item" th:href="@{${pageUrl}+'&sortCriteria=id&sortDirection='+${sortDirection}+
+                                                           '&page=0&size='+${size}}">ID</a>
+                                                        <a class="dropdown-item" th:href="@{${pageUrl}+'&sortCriteria=title&sortDirection='+${sortDirection}+
+                                                           '&page=0&size='+${size}}">Title</a>
+                                                    </div>
+                                                </li>
+                                                <li class="nav-item dropdown">
+                                                    <a class="nav-link dropdown-toggle" href="#" id="sortDirectionButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Order by
+                                                    </a>
+                                                    <div class="dropdown-menu" aria-labelledby="sortDirectionButton">
+                                                        <a class="dropdown-item" th:href="@{${pageUrl}+'&sortCriteria='+${sortCriteria}+
+                                                           '&sortDirection=ASC'+'&page=0&size='+${size}}">Ascending</a>
+                                                        <a class="dropdown-item" th:href="@{${pageUrl}+'&sortCriteria='+${sortCriteria}+
+                                                           '&sortDirection=DESC'+'&page=0&size='+${size}}">Descending</a>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <form class="form-inline my-2 my-lg-0" action="#" th:action="@{${pageLink}}" method="get">
+                                                <input class="hide" type="hidden" name="size" th:value="${size}">
+                                                <input class="hide" type="hidden" name="sortCriteria" th:value="${sortCriteria}">
+                                                <input class="hide" type="hidden" name="sortDirection" th:value="${sortDirection}">
+                                                <input class="form-control mr-sm-2" type="search" name="searchParam" 
+                                                       th:value="${searchParam}" placeholder="Search" aria-label="Search">
+                                                <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+                                            </form>
+                                        </div>
+                                    </nav>
+                                </div>
+                                <div class="card-body pb-0">
+                                    <div class="row d-flex align-items-stretch">
+                                        <div th:each="photo : ${photos}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                                            <div class="card bg-light">
+                                                <div class="card-header text-muted border-bottom-0">
+                                                    <b th:text="${#strings.capitalize(photo.title)}"></b>
+                                                </div>
+                                                <div class="card-body pt-0">
+                                                    <div class="row">
+                                                        <div class="col-12 center">
+                                                            <img th:src="@{'data:image/png;base64,'+${photo.photo}}" 
+                                                                 alt="" class="img-fluid">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <a class="btn btn-primary btn-sm" 
+                                                       th:href="@{${pageLink}+'details/'+${photo.id}}">
+                                                        <i class="fas fa-folder"></i>
+                                                        View
+                                                    </a>
+                                                    <a class="btn btn-info btn-sm" 
+                                                       th:href="@{${pageLink}+'update/'+${photo.id}}">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        Edit
+                                                    </a>
+                                                    <a class="btn btn-danger btn-sm" 
+                                                       th:href="@{${pageLink}+'delete/'+${photo.id}}">
+                                                        <i class="fas fa-trash"></i>
+                                                        Delete
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+                                <div class="card-footer">
+                                    <nav aria-label="Pagination" th:if="${totalPages gt 0}">
+                                        <ul class="pagination justify-content-center font-weight-medium">
+                                            <li class="page-item" th:classappend="${pageIndex lt 5} ? 'hide'">
+                                                <a class="page-link svg-icon"
+                                                   th:href="@{${pageUrl}+'&page=0'}"
+                                                   aria-label="First"
+                                                   title="First Page" rel="tooltip">
+                                                    <i class="fas fa-angle-left"></i>
+                                                    <i class="fas fa-angle-left"></i>
+                                                </a>
+                                            </li>
+                                            <li class="page-item" th:classappend="${pageIndex lt 5} ? 'hide'">
+                                                <a class="page-link svg-icon"
+                                                   th:href="@{${pageUrl}+'&page='+${pageIndex - 1}}"
+                                                   aria-label="Previous"
+                                                   title="Previous Page" rel="tooltip">
+                                                    <i class="fas fa-angle-left"></i>
+                                                </a>
+                                            </li>
+                                            <li class="page-item" th:classappend="${i eq pageIndex} ? 'active'"
+                                                th:each="i : ${#numbers.sequence(pageIndex > 2 ? pageIndex - 2 : 0, 
+                                                totalPages > pageIndex + 2 ? pageIndex + 2 : totalPages -1, 1)}">
+                                                <a class="page-link" th:href="@{${pageUrl}+'&page='+${i}}" th:text="${i + 1}"
+                                                   th:title="${'Page '+ (i+1)}"
+                                                   rel="tooltip"></a>
+                                            </li>
+                                            <li class="page-item disabled" th:if="${pageIndex + 3 < totalPages}">
+                                                <a class="page-link svg-icon" href="#">
+                                                    <span data-feather="more-horizontal" width="20" height="20"></span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item" th:classappend="${totalPages < 6} ? 'hide'">
+                                                <a class="page-link svg-icon" th:href="@{${pageUrl}+'&page='+${pageIndex + 1}}"
+                                                   aria-label="Next"
+                                                   title="Next Page" rel="tooltip">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </li>
+                                            <li class="page-item" th:classappend="${totalPages < 6} ? 'hide'">
+                                                <a class="page-link" th:href="@{${pageUrl}+'&page='+${totalPages - 1}}"
+                                                   aria-label="Last"
+                                                   title="Last Page" rel="tooltip">
+                                                    <i class="fas fa-angle-right"></i>
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <!-- /.card-footer -->
+                            </div>
+                        </div>
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content ends-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> 
+                All rights reserved.
+            </footer>
+        </div>
+    </body>
+</html>

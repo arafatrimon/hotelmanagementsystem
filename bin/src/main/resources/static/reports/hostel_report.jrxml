@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="hostel_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f7560211-93e7-43a1-bb17-4f10ea57394d">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="start_date" class="java.lang.String"/>
+	<parameter name="end_date" class="java.lang.String"/>
+	<parameter name="hostel" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT SUM(bazar) AS bazars, SUM(ebill) AS ebills,  SUM(salary) AS salaries,  SUM(bill) AS bills,  SUM(cost) AS costs, SUM(deposits) as deposit, SUM(fees) as fee, ((SUM(deposits)+SUM(fees))-(SUM(bazar)+SUM(ebill)+SUM(salary)+SUM(bill)+SUM(cost))) AS profit, (SELECT name FROM hostel WHERE id = $P{hostel}) AS hostel
+FROM(
+SELECT SUM(total) AS bazar, 0 AS ebill, 0 AS salary, 0 AS bill, 0 AS cost, 0 AS fees, 0 AS deposits FROM Bazar b WHERE b.date BETWEEN $P{start_date} and $P{end_date} and b.branch IN(SELECT id FROM branch WHERE hostel = $P{hostel})
+UNION ALL
+SELECT 0 AS bazar, SUM(total) AS ebill, 0 AS salary, 0 AS bill, 0 AS cost, 0 AS fees, 0 AS deposits FROM Electricity_Bills b  WHERE b.date BETWEEN $P{start_date} and $P{end_date} and b.branch IN(SELECT id FROM branch WHERE hostel = $P{hostel})
+UNION ALL
+SELECT 0 AS bazar, 0 AS ebill, SUM(amount) AS salary, 0 AS bill, 0 AS cost, 0 AS fees, 0 AS deposits FROM Salary b WHERE b.date BETWEEN $P{start_date} and $P{end_date} and b.employee in (SELECT id FROM employee WHERE branch IN(SELECT id FROM branch WHERE hostel = $P{hostel}) AND is_active = true)
+UNION ALL
+SELECT 0 AS bazar, 0 AS ebill, 0 AS salary, SUM(amount) AS bill, 0 AS cost, 0 AS fees, 0 AS deposits FROM Bills b WHERE b.date BETWEEN $P{start_date} and $P{end_date} and b.branch IN(SELECT id FROM branch WHERE hostel = $P{hostel})
+UNION ALL
+SELECT 0 AS bazar, 0 AS ebill, 0 AS salary, 0 AS bill, SUM(amount) AS cost, 0 AS fees, 0 AS deposits FROM Cost b WHERE b.date BETWEEN $P{start_date} and $P{end_date} and b.branch IN(SELECT id FROM branch WHERE hostel = $P{hostel})
+UNION ALL
+SELECT 0 AS bazar, 0 AS ebill, 0 AS salary, 0 AS bill, 0 AS cost, SUM(amount) AS fees, 0 AS deposits FROM Student_Payment b WHERE b.date BETWEEN $P{start_date} and $P{end_date} and student IN(SELECT e.id from Student e WHERE e.branch IN(SELECT id FROM branch WHERE hostel = $P{hostel}))
+UNION ALL
+SELECT 0 AS bazar, 0 AS ebill, 0 AS salary, 0 AS bill, 0 AS cost, 0 AS fees, SUM(amount) AS deposits FROM Deposit b  WHERE b.date BETWEEN $P{start_date} and $P{end_date} and b.branch IN(SELECT id FROM branch WHERE hostel = $P{hostel})
+) AS fs;]]>
+	</queryString>
+	<field name="bazars" class="java.lang.Double"/>
+	<field name="ebills" class="java.lang.Double"/>
+	<field name="salaries" class="java.lang.Double"/>
+	<field name="bills" class="java.lang.Double"/>
+	<field name="costs" class="java.lang.Double"/>
+	<field name="deposit" class="java.lang.Double"/>
+	<field name="fee" class="java.lang.Double"/>
+	<field name="profit" class="java.lang.Double"/>
+	<field name="hostel" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="totalRevenue" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{deposit}+$F{fee}]]></variableExpression>
+	</variable>
+	<variable name="totalCost" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{bazars}+$F{ebills}+$F{salaries}+$F{bills}+$F{costs}]]></variableExpression>
+	</variable>
+	<variable name="netIncome" class="java.lang.Double">
+		<variableExpression><![CDATA[$F{deposit}+$F{fee}-$F{bazars}-$F{ebills}-$F{salaries}-$F{bills}-$F{costs}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="68" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="24" width="555" height="24" backcolor="#CCCCCC" uuid="a865cfd2-b69c-4cdc-94fb-fb92c27c2ce6"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consolidated Statement of Operation]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="24" backcolor="#CCCCCC" uuid="d7f37d5b-7925-46be-b30b-b085f9d13130"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hostel}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="48" width="555" height="20" backcolor="#CCCCCC" uuid="a0b2359d-72f9-4d40-9345-ac6edae1b85d"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["31 December "+$P{end_date}.substring( 0, 4 )]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="10"/>
+	</columnHeader>
+	<summary>
+		<band height="289">
+			<staticText>
+				<reportElement mode="Opaque" x="10" y="0" width="545" height="20" backcolor="#F0F0F0" uuid="52e20bc4-1968-47c5-ba13-6d61f7ef6eed"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Revenue and other incomes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="45" y="40" width="181" height="20" uuid="118e8d2c-ffb2-4449-ad01-58670181cd00"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Income from other sources]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="40" width="112" height="20" uuid="696b9509-2a8a-4c57-a508-4e12f3ea10a8"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deposit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="443" y="20" width="112" height="20" uuid="cb89bc65-0ff7-491a-a633-513879f12fbf"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fee}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="45" y="20" width="181" height="20" uuid="b3f104dc-da11-4ea6-9ded-328ac2b8bd2e"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Payments form students]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="77" y="63" width="366" height="20" uuid="a2f5fee3-9e8f-4305-a092-be1137354a33"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total revenues and other invomes]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="63" width="112" height="20" uuid="fac2b17a-d7b1-4523-8658-d709906420b0"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalRevenue}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="10" y="96" width="545" height="20" backcolor="#F0F0F0" uuid="a348de4d-a5b7-4501-b1af-ab54ac3c8067"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cost and other deductions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="45" y="116" width="100" height="20" uuid="36e09698-c97a-456a-a354-9b3138c960d1"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Bazars]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="116" width="112" height="20" uuid="8d64258d-67a5-4c44-b12a-6913a515b635"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bazars}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="45" y="135" width="100" height="20" uuid="05eb9628-74da-41ba-aafa-d112deb954ee"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Electricity bills]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="136" width="112" height="20" uuid="1c32f34f-9f69-4931-81b7-0ced1ed067d7"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ebills}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="45" y="155" width="100" height="20" uuid="81393271-3cbc-4d8d-b74f-8ea1ddddd129"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Salarie payments]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="156" width="112" height="20" uuid="7ccba93b-69e6-4959-a5d9-fa05169038ab"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salaries}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="45" y="175" width="100" height="20" uuid="67e1eb62-753b-42f9-b364-a009a890e93f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Other bills]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="176" width="112" height="20" uuid="7d63f7de-cb3d-4fce-88d6-0b14cb89b7ac"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bills}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="45" y="195" width="100" height="20" uuid="72d8c52f-dc2e-45eb-8ed0-815feb7f1b17"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Other costs]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="443" y="196" width="112" height="20" uuid="8d25e74a-7fa4-4d8d-bd7d-8fe63cf802f2"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{costs}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="443" y="218" width="112" height="20" uuid="6467e3cd-6ec7-48e7-92c3-a6dc9f17cef8"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalCost}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="10" y="247" width="433" height="20" backcolor="#F0F0F0" uuid="68e23c12-beb2-496d-a156-dd2711ced419"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Net income before tax deduction]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="443" y="247" width="112" height="20" backcolor="#F0F0F0" uuid="4dbd9b99-7c5c-48ac-9d63-357e07abe9c9"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{netIncome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="77" y="218" width="366" height="20" uuid="f3f979fd-40eb-49ec-8a34-cbf73702019f"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total revenues and other invomes]]></text>
+			</staticText>
+			<line>
+				<reportElement x="443" y="61" width="112" height="1" uuid="204d77da-5763-4c4d-9e16-d41989b0e9a1"/>
+			</line>
+			<line>
+				<reportElement x="443" y="82" width="112" height="1" uuid="5d40a601-2fa7-4838-bc6c-6c0f657696d5"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="443" y="216" width="112" height="1" uuid="ac20e747-ebc8-459d-9cb1-e61bdb4a411a"/>
+			</line>
+			<line>
+				<reportElement x="443" y="238" width="112" height="1" uuid="f8525c62-5198-4b5f-aec9-27c2b481bb2e"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="282" uuid="8be2eac1-6172-4a56-a3a5-fe8ccd0e3f3e"/>
+			</rectangle>
+		</band>
+	</summary>
+</jasperReport>

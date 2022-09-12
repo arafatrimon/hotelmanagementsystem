@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <div th:fragment="dataTable(data)">
+            <table id="listTable" class="table table-bordered table-striped" th:with="
+                   headers = ${data.get('headers')},
+                   rows = ${data.get('rows')},
+                   class = ${data.get('class')}
+                   ">
+                <thead style="text-align: center">
+                    <tr>
+                        <th th:each="header: ${headers}" th:if="${header != 'id'}" th:text="${#strings.capitalizeWords(header)}" />
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+<!--                <tbody th:if="${deactivation == null and account == null}">
+                    <tr class="even pointer" th:each="row: ${rows}">
+                <th:block th:each="header: ${headers}" th:switch="${header}">
+                    <td th:case="'photo'">
+                        <img th:src="@{'/uploads/'+${row.get('photo')}}" 
+                             class="table-image img-circle" alt="Image">
+                    </td>
+                    <td th:case="'logo'">
+                        <img th:src="@{'/uploads/'+${row.get('logo')}}" 
+                             class="table-image img-circle" alt="Image">
+                    </td>
+                    <th:block th:case="'id'"></th:block>
+                    <td th:case="*" th:text="${row.get(header)}"></td>
+                </th:block>
+                <td>
+                    <a class="btn btn-primary btn-sm" 
+                       th:href="@{'/'+${class}+'/details/'+${row.get('id')}}">
+                        <i class="fas fa-folder">
+                        </i>
+                        View
+                    </a>
+                    <a class="btn btn-info btn-sm" 
+                       th:href="@{'/'+${class}+'/update/'+${row.get('id')}}">
+                        <i class="fas fa-pencil-alt">
+                        </i>
+                        Edit
+                    </a>
+                    <a class="btn btn-danger btn-sm" 
+                       th:href="@{'/'+${class}+'/delete/'+${row.get('id')}}">
+                        <i class="fas fa-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+                </tr>
+                </tbody>
+                <tbody th:if="${deactivation}">
+                    <tr class="even pointer" th:each="row: ${rows}">
+                <th:block th:each="header: ${headers}" th:switch="${header}">
+                    <td th:case="'photo'">
+                        <img th:src="@{'/uploads/'+${row.get('photo')}}" 
+                             class="table-image img-circle" alt="Image">
+                    </td>
+                    <td th:case="'logo'">
+                        <img th:src="@{'/uploads/'+${row.get('logo')}}" 
+                             class="table-image img-circle" alt="Image">
+                    </td>
+                    <th:block th:case="'id'"></th:block>
+                    <td th:case="*" th:text="${row.get(header)}"></td>
+                </th:block>
+                <td>
+                    <a class="btn btn-primary btn-sm" 
+                       th:href="@{'/'+${class}+'/details/'+${row.get('id')}}">
+                        <i class="fas fa-folder">
+                        </i>
+                        View
+                    </a>
+                    <a class="btn btn-info btn-sm" 
+                       th:href="@{'/'+${class}+'/update/'+${row.get('id')}}">
+                        <i class="fas fa-pencil-alt">
+                        </i>
+                        Edit
+                    </a>
+                    <a class="btn btn-warning btn-sm" 
+                       th:href="@{'/'+${class}+'/deactivate/'+${row.get('id')}}">
+                        <i class="fas fa-pencil-alt">
+                        </i>
+                        Deactivate
+                    </a>
+                    <a class="btn btn-danger btn-sm" 
+                       th:href="@{'/'+${class}+'/delete/'+${row.get('id')}}">
+                        <i class="fas fa-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+                </tr>
+                </tbody>-->
+                <!--<tbody th:if="${account}">-->
+                <tbody>
+                    <tr class="even pointer" th:each="row: ${rows}">
+                <th:block th:each="header: ${headers}" th:switch="${header}">
+                    <td th:case="'photo'">
+                        <img th:src="@{'/uploads/'+${row.get('photo')}}" 
+                             class="table-image img-circle" alt="Image">
+                    </td>
+                    <td th:case="'logo'">
+                        <img th:src="@{'/uploads/'+${row.get('logo')}}" 
+                             class="table-image img-circle" alt="Image">
+                    </td>
+                    <td th:case="'date'" th:text="${#dates.format(row.get('date'), 'dd MMMM yyyy')}"></td>
+                    <td th:case="'estDate'" th:text="${#dates.format(row.get('estDate'), 'dd MMMM yyyy')}"></td>
+                    <th:block th:case="'id'"></th:block>
+                    <td th:case="*" th:text="${row.get(header)}"></td>
+                </th:block>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{'/'+${class}+'/details/'+${row.get('id')}}" title="View">
+                        <i class="fas fa-folder"></i>
+                    </a>
+                    <a class="btn btn-info btn-sm" th:href="@{'/'+${class}+'/update/'+${row.get('id')}}" title="Edit">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a th:if="${accounts != null}"  class="btn btn-success btn-sm" 
+                       th:href="@{'/'+${class}+'/account/'+${row.get('username')}}" title="Account">
+                        <i class="fa fa-cog"></i>
+                    </a>
+                    <a th:if="${deactivation != null or account != null}" class="btn btn-warning btn-sm" 
+                       th:href="@{'/'+${class}+'/deactivate/'+${row.get('id')}}" title="Deactivate">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn btn-danger btn-sm" 
+                       th:href="@{'/'+${class}+'/delete/'+${row.get('id')}}" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+                </tr>
+                </tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
+    </body>
+</html>

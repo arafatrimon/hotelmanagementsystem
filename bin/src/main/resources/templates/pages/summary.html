@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>        
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="container-fluid">
+                        <!--Dynamic contents starts-->
+                        <div th:if="${message}" class="row">
+                            <div th:replace="~{fragments/message :: message}"></div>                        
+                        </div>
+
+                        <!-- Cards starts -->
+                        <div class="row"  th:if="${summary}">
+                            <div class="col-lg-3 col-md-3 col-6">
+                                <!-- small card -->
+                                <div class="small-box bg-info">                                
+                                    <div class="icon">
+                                        <i class="fa fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="inner">
+                                        <h3 th:text="${summary.get('totalStudents')}">1</h3>
+                                        <p>Students</p>
+                                    </div>
+                                    <a href="/student/active" class="small-box-footer">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-6">
+                                <!-- small card -->
+                                <div class="small-box bg-success">                                
+                                    <div class="icon">
+                                        <i class="fas fa-hamburger" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="inner">
+                                        <h3 th:text="${summary.get('todayMeals')}">1</h3>
+                                        <p>Meals today</p>
+                                    </div>
+                                    <a href="/meal/today" class="small-box-footer">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-6">
+                                <!-- small card -->
+                                <div class="small-box bg-warning">                                
+                                    <div class="icon">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div class="inner">
+                                        <h3 th:text="${summary.get('todayBazar')+' tk.'}">150</h3>
+                                        <p>Today's Bazar</p>
+                                    </div>
+                                    <a th:href="@{'/bazar/?searchParam=' + ${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}}" class="small-box-footer">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-6">
+                                <!-- small card -->
+                                <div class="small-box bg-danger">
+                                    <div class="icon">
+                                        <i class="fa fa-bed"></i>
+                                    </div>
+                                    <div class="inner">
+                                        <h3 th:text="${summary.get('emptySeats')}">150</h3>
+                                        <p>Empty Seats</p>
+                                    </div>
+                                    <a href="/seat/?searchParam=empty" class="small-box-footer">
+                                        More info <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Cards ends -->
+
+
+                        <!-- Chart starts -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- BAR CHART -->
+                                <div class="card card-success">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Income and Cost Summary</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas id="incomeCostChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 339px;" width="339" height="250" class="chartjs-render-monitor"></canvas>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+                                <!-- /.card -->
+
+                                <!-- DONUT CHART -->
+                                <div class="card card-danger">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Income Analysis of Current Month</h3>
+                                    </div>
+                                    <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                        <canvas id="incomeChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 339px;" width="339" height="250" class="chartjs-render-monitor"></canvas>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+                                <!-- /.card -->
+                            </div>
+                            <!-- /.col (LEFT) -->
+                            <div class="col-md-6">
+                                <!-- AREA CHART -->
+                                <div class="card card-primary">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Profit Summary</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas id="profitChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 339px;" width="339" height="250" class="chartjs-render-monitor"></canvas>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+                                <!-- /.card -->
+
+                                <!-- PIE CHART -->
+                                <div class="card card-warning">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Cost Analysis of Current Month</h3>
+                                    </div>
+                                    <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                        <canvas id="costChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 339px;" width="339" height="250" class="chartjs-render-monitor"></canvas>
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+                                <!-- /.card -->
+
+                            </div>
+                            <!-- /.col (RIGHT) -->
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content ends-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> All rights reserved.
+            </footer>
+        </div>        
+        <script th:src="@{/dist/js/Chart.min.js}"></script>
+        <script th:if="${summary}" th:inline="javascript">
+            $(function() {
+                //---------------------------------
+                //- AREA CHART FOR PROFIT SUMMARY -
+                //---------------------------------
+
+                // Get context with jQuery - using jQuery's .get() method.
+                var profitChartCanvas = $('#profitChart').get(0).getContext('2d');
+                var profitChartData = {
+                    labels: [(${summary.get('months')})],
+                    datasets: [{
+                    label: 'Profit',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.8)',
+                        pointRadius: false,
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)',
+                        data: [(${summary.get('profitValues')})]
+                    }]
+                }
+
+                var profitChartOptions = {
+                maintainAspectRatio: false,
+                    responsive: true,
+                    legend: {
+                    display: false
+                    },
+                    scales: {
+                    xAxes: [{
+                    gridLines: {
+                    display: false,
+                    }
+                    }],
+                        yAxes: [{
+                        gridLines: {
+                        display: false,
+                        }
+                        }]
+                    }
+                }
+
+                // This will get the first returned node in the jQuery collection.
+                var profitChart = new Chart(profitChartCanvas, {
+                    type: 'line',
+                    data: profitChartData,
+                    options: profitChartOptions
+                })
+
+                //----------------------------------
+                //- DOUGHNUT CHART FOR INCOME ANALYSIS-
+                //----------------------------------
+                // Get context with jQuery - using jQuery's .get() method.
+                var incomeChartCanvas = $('#incomeChart').get(0).getContext('2d')
+                var donutData = {
+                    labels: ["Student Fees", "Others"],
+                    datasets: [{
+                    data: [(${summary.get('categorizedIncomeValues')})],
+                    backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+                    }]
+                }
+                var donutOptions = {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                }
+                //Create pie or douhnut chart
+                // You can switch between pie and douhnut using the method below.
+                var incomeChart = new Chart(incomeChartCanvas, {
+                    type: 'doughnut',
+                    data: donutData,
+                    options: donutOptions
+                })
+
+                //------------------------------
+                //- PIE CHART FOR COST ANALYSIS-
+                //------------------------------
+                // Get context with jQuery - using jQuery's .get() method.
+                var costChartCanvas = $('#costChart').get(0).getContext('2d')
+                var pieData = {
+                    labels: ["Bazar", "Electricity Bill", "Salary", "Other Bills", "Other Costs"],
+                    datasets: [{
+                        data: [(${summary.get('categorizedCostValues')})],
+                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+                    }]  
+                }
+                var pieOptions = {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                }
+                //Create pie or douhnut chart
+                // You can switch between pie and douhnut using the method below.
+                var costChart = new Chart(costChartCanvas, {
+                    type: 'pie',
+                    data: pieData,
+                    options: pieOptions
+                })
+
+                //----------------------------------------
+                //- BAR CHART FOR INCOME AND COST SUMMARY-
+                //----------------------------------------
+                var barChartCanvas = $('#incomeCostChart').get(0).getContext('2d')
+                var barChartData = {
+                labels: [(${summary.get('months')})],
+                    datasets: [{
+                    label: 'Income',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.8)',
+                        pointRadius: false,
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)',
+                        data: [(${summary.get('monthlyIncomes')})]
+                    }, {
+                    label: 'Cost',
+                        backgroundColor: 'rgba(210, 214, 222, 1)',
+                        borderColor: 'rgba(210, 214, 222, 1)',
+                        pointRadius: false,
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: [(${summary.get('monthlyCosts')})]
+                    }]
+                }
+
+                var barChartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    datasetFill: false
+                }
+
+                var barChart = new Chart(barChartCanvas, {
+                    type: 'bar',
+                    data: barChartData,
+                    options: barChartOptions
+                })
+                }
+            )
+        </script>
+    </body>
+</html>

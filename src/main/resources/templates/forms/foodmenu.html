@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="${#strings.capitalizeWords(module)}">Form</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" role="form">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <div class="form-group">
+                                            <input type="text" th:field="*{id}" class="form-control hide" id="id">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="days">Day of Week</label>
+                                            <select th:field="*{days}" class="form-control" id="days">
+                                                <option value="Saturday" th:selected="${entity.days == 'Saturday'}">Saturday</option>
+                                                <option value="Sunday" th:selected="${entity.days == 'Sunday'}">Sunday</option>
+                                                <option value="Monday" th:selected="${entity.days == 'Monday'}">Monday</option>
+                                                <option value="Tuesday" th:selected="${entity.days == 'Tuesday'}">Tuesday</option>
+                                                <option value="Wednesday" th:selected="${entity.days == 'Wednesday'}">Wednesday</option>
+                                                <option value="Thursday" th:selected="${entity.days == 'Thursday'}">Thursday</option>
+                                                <option value="Friday" th:selected="${entity.days == 'Friday'}">Friday</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="breakfast">Food Items at Breakfast</label>
+                                            <input type="text" th:field="*{breakfast}" class="form-control" id="breakfast" required>
+                                            <span 
+                                                th:if="${#fields.hasErrors('breakfast')}" 
+                                                th:errors="*{breakfast}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lunch">Food Items at Lunch</label>
+                                            <input type="text" th:field="*{lunch}" class="form-control" id="lunch" required>
+                                            <span 
+                                                th:if="${#fields.hasErrors('lunch')}" 
+                                                th:errors="*{lunch}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="supper">Food Items at Supper</label>
+                                            <input type="text" th:field="*{supper}" class="form-control" id="supper" required>
+                                            <span 
+                                                th:if="${#fields.hasErrors('supper')}" 
+                                                th:errors="*{supper}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer th:replace="~{fragments/shared/footer :: footer}"></footer>
+        </div>
+    </body>
+</html>

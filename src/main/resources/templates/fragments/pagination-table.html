@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head></head>
+    <body>
+        <div th:fragment="table">
+            <th:block th:with="
+                      class = ${data.get('class')},
+                      pageIndex = ${data.get('pageIndex')},
+                      totalPages = ${data.get('totalPages')},
+                      totalElements = ${data.get('totalElements')},
+                      size = ${size != null} ? ${size} : 10,
+                      filterText = ${filterText != null} ? ${filterText} : '',
+                      searchParam = ${searchParam != null} ? ${searchParam} : '',
+                      startDate = ${startDate != null} ? ${startDate} : '',
+                      endDate = ${endDate != null} ? ${endDate} : '',
+                      sortCriteria = ${sortCriteria != null} ? ${sortCriteria} : '',
+                      sortDirection = ${sortDirection != null} ? ${sortDirection} : '',
+                      filterUrl = ${pageLink}+'?filterText='+${filterText}+'&searchParam='+${searchParam}+'&startDate='+${startDate}+
+                      '&endDate='+${endDate}
+                      ">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <!--                    <a class="navbar-brand" href="#">Navbar</a>-->
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto"> 
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="pageSizeButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Page Size
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="pageSizeButton" th:with="
+                                     pageSizeUrl = ${filterUrl}+'&sortCriteria='+${sortCriteria}+'&sortDirection='+${sortDirection}+'&page=0'">
+                                    <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=10'}">10</a>
+                                    <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=25'}">25</a>
+                                    <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=50'}">50</a>
+                                    <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=75'}">75</a>
+                                    <a class="dropdown-item" th:href="@{${pageSizeUrl}+'&size=100'}">100</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="sortCriteriaButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sort by
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="sortCriteriaButton" th:with=" headers = ${data.get('headers')}">
+                                    <th:block th:each="header: ${headers}" th:if="${header != 'id'}">
+                                        <a class="dropdown-item" th:href="@{${filterUrl}+'&sortCriteria='+${header}+
+                                           '&sortDirection='+${sortDirection}+'&page=0&size='+${size}}" 
+                                           th:text="${#strings.capitalizeWords(header)}"></a>
+                                    </th:block>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="sortDirectionButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Order by
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="sortDirectionButton">
+                                    <a class="dropdown-item" th:href="@{${filterUrl}+'&sortCriteria='+${sortCriteria}+
+                                       '&sortDirection=ASC'+'&page=0&size='+${size}}">Ascending</a>
+                                    <a class="dropdown-item" th:href="@{${filterUrl}+'&sortCriteria='+${sortCriteria}+
+                                       '&sortDirection=DESC'+'&page=0&size='+${size}}">Descending</a>
+                                </div>
+                            </li>
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0" action="#" th:action="@{${pageLink}}" method="get">
+                            <input class="hide" type="hidden" name="filterText" th:value="${filterText}">
+                            <input class="hide" type="hidden" name="startDate" th:value="${startDate}">
+                            <input class="hide" type="hidden" name="endDate" th:value="${endDate}">
+                            <!--<input class="hide" type="hidden" name="page" th:value="${pageIndex}">-->
+                            <input class="hide" type="hidden" name="size" th:value="${size}">
+                            <input class="hide" type="hidden" name="sortCriteria" th:value="${sortCriteria}">
+                            <input class="hide" type="hidden" name="sortDirection" th:value="${sortDirection}">
+                            <input class="form-control mr-sm-2" type="search" name="searchParam" th:value="${searchParam}"
+                                   placeholder="Search" aria-label="Search">
+                            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
+                        </form>
+                    </div>
+                </nav>
+                <div class="col-12 table-responsive">
+                    <div th:if="${totalPages}" th:replace="~{fragments/table :: dataTable(${data})}"></div>
+                    <div class="row text-center" th:if="${totalPages eq 0}">
+                        No data found!
+                    </div>
+                </div>
+                <div class="row" th:if="${totalPages gt 0}">
+                    <div class="col-6" th:text="${'Page ' + (pageIndex + 1) + ' of ' + totalPages + ' pages'}"></div>
+                    <div class="col-6 text-right" th:text="${'Total ' + totalElements + ' entries'}"></div>
+                </div>
+                <!--pagination links-->
+                <nav aria-label="Pagination" th:if="${totalPages gt 0}" 
+                     th:with="pageUrl = ${filterUrl}+'&sortCriteria='+${sortCriteria}+'&sortDirection='+${sortDirection}+
+                     '&size='+${size}">                    
+                    <ul class="pagination justify-content-center font-weight-medium">
+                        <li class="page-item" th:classappend="${pageIndex lt 5} ? 'hide'">
+                            <a class="page-link svg-icon"
+                               th:href="@{${pageUrl}+'&page=0'}"
+                               aria-label="First"
+                               title="First Page" rel="tooltip">
+                                <i class="fas fa-angle-left"></i>
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${pageIndex lt 5} ? 'hide'">
+                            <a class="page-link svg-icon"
+                               th:href="@{${pageUrl}+'&page='+${pageIndex - 1}}"
+                               aria-label="Previous"
+                               title="Previous Page" rel="tooltip">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i eq pageIndex} ? 'active'"
+                            th:each="i : ${#numbers.sequence(pageIndex > 2 ? pageIndex - 2 : 0, 
+                            totalPages > pageIndex + 2 ? pageIndex + 2 : totalPages -1, 1)}">
+                            <a class="page-link" th:href="@{${pageUrl}+'&page='+${i}}" th:text="${i + 1}"
+                               th:title="${'Page '+ (i+1)}"
+                               rel="tooltip"></a>
+                        </li>
+                        <li class="page-item disabled" th:if="${pageIndex + 3 < totalPages}">
+                            <a class="page-link svg-icon" href="#">
+                                <span data-feather="more-horizontal" width="20" height="20"></span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${totalPages == (pageIndex + 1)} ? 'hide'">
+                            <a class="page-link svg-icon" th:href="@{${pageUrl}+'&page='+${pageIndex + 1}}"
+                               aria-label="Next"
+                               title="Next Page" rel="tooltip">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${totalPages < 6} ? 'hide'">
+                            <a class="page-link" th:href="@{${pageUrl}+'&page='+${totalPages - 1}}"
+                               aria-label="Last"
+                               title="Last Page" rel="tooltip">
+                                <i class="fas fa-angle-right"></i>
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </th:block>
+        </div>
+    </body>
+</html>

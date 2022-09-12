@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>        
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <script th:src="@{/dist/js/angular.min.js}"></script>
+        <link rel="stylesheet" th:href="@{/dist/css/selectize.bootstrap3.min.css}">
+        <script th:inline="javascript">
+            angular.module('salaryApp', []).controller('salaryCtrl',
+                    function ($scope) {
+                    $scope.employees = [(${mclist})];
+                    $scope.employee = [(${(mcitem != null) ? mcitem : 0})];
+                    });
+        </script>
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title" >Salary Form</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" role="form">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <input type="hidden" th:field="*{id}" class="form-control hide" id="id">
+                                        <div class="card-body" ng-app="salaryApp" ng-controller="salaryCtrl">
+                                            <div class="form-group">
+                                                <label for="name">Employee</label>
+                                                <select class="form-control" ng-model='employee' 
+                                                        ng-options='employee.name for employee in employees track by employee.id'
+                                                        th:disabled="${entity.id != null}">
+                                                    <option value="">Select an employee</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group hide">
+                                                <input type="hidden" name="employee.id" value="{{employee.id}}" class="form-control hide" id="empid">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="month">Month of Salary</label>
+                                                <select th:field="*{month}" class="form-control" id="month">
+                                                    <option value="1" th:selected="${entity.month == 1}">January</option>
+                                                    <option value="2" th:selected="${entity.month == 2}">February</option>
+                                                    <option value="3" th:selected="${entity.month == 3}">March</option>
+                                                    <option value="4" th:selected="${entity.month == 4}">April</option>
+                                                    <option value="5" th:selected="${entity.month == 5}">May</option>
+                                                    <option value="6" th:selected="${entity.month == 6}">June</option>
+                                                    <option value="7" th:selected="${entity.month == 7}">July</option>
+                                                    <option value="8" th:selected="${entity.month == 8}">August</option>
+                                                    <option value="9" th:selected="${entity.month == 9}">September</option>
+                                                    <option value="10" th:selected="${entity.month == 10}">October</option>
+                                                    <option value="11" th:selected="${entity.month == 11}">November</option>
+                                                    <option value="12" th:selected="${entity.month == 12}">December</option>
+                                                </select>
+                                                <span th:if="${#fields.hasErrors('month')}" th:errors="*{month}" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="year" >Year of Payment</label> 
+                                                <input type="number" th:field="*{year}" class="form-control" id="year" 
+                                                       min="2000" max="2099" required>
+                                                <span th:if="${#fields.hasErrors('year')}" th:errors="*{year}" class="text-danger">
+                                                </span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="amount">Salary</label>
+                                                <input type="text" name="amount" value="{{employee.salary}}" class="form-control" id="amount" required="true">
+                                                <span 
+                                                    th:if="${#fields.hasErrors('amount')}" 
+                                                    th:errors="*{amount}"
+                                                    class="text-danger">
+                                                </span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="date">Date of Payment</label>
+                                                <input type="date" th:field="*{date}" class="form-control" id="date">
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer th:replace="~{fragments/shared/footer :: footer}"></footer>
+        </div>
+        <script th:src="@{/dist/js/selectize.min.js}"></script>
+        <script>
+            $(document).ready(function () {
+                $('select').selectize({
+                    
+                });
+            });
+        </script>
+    </body>
+</html>

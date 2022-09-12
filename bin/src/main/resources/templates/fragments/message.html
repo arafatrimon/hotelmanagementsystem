@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head></head>
+    <body>
+        <div th:fragment="message" class="col-12">
+            <div class="callout callout-info">
+                <h5>
+                    <i class="fas fa-info"></i> &nbsp;&nbsp;
+                    <span th:text="${message}"></span>
+                </h5>
+            </div>
+        </div>
+    </body>
+</html>

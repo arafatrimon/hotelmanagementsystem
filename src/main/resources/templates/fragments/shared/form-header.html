@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>        
+    </head>
+    <body>        
+        <div th:fragment="header" class="text-center">
+            <h4 th:text="${#strings.capitalizeWords(session.hostelName)}"></h4>
+            <h4 th:text="${#strings.capitalizeWords(session.branchName)}"></h4>
+            <h4 th:text="${#strings.capitalizeWords(module)}"></h4>
+        </div>
+    </body>
+</html>
+
+

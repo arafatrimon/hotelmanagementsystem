@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <link rel="stylesheet" th:href="@{/dist/css/selectize.bootstrap3.min.css}">
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="${#strings.capitalizeWords(module)}">Form</h3>
+                                </div>
+                                <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" role="form">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <input type="text" th:field="*{id}" class="form-control" id="id" style="display: none">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bazarItems">Bazar Items</label>
+                                            <select th:field="*{bazarItems.id}" class="form-control" id="bazarItems" placeholder="Select an item">
+                                                <option th:each="bazarItems : ${mclist}" th:value="${bazarItems.id}" th:text="${bazarItems}"></option>
+                                            </select>
+                                            <span 
+                                                th:if="${#fields.hasErrors('bazarItems.id')}" 
+                                                th:errors="*{bazarItems.id}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="quantity">Quantity</label>
+                                            <input type="number" th:field="*{quantity}" class="form-control" id="quantity" >
+                                            <span 
+                                                th:if="${#fields.hasErrors('quantity')}" 
+                                                th:errors="*{quantity}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="untitPrice">Unit Price</label>
+                                            <input type="number" th:field="*{untitPrice}" class="form-control" id="untitPrice" >
+                                            <span 
+                                                th:if="${#fields.hasErrors('untitPrice')}" 
+                                                th:errors="*{untitPrice}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="total">Total</label>
+                                            <input type="number" th:field="*{total}" class="form-control" id="total" >
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="date">Date</label>
+                                            <input type="date" th:field="*{date}" class="form-control" id="date" >
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer th:replace="~{fragments/shared/footer :: footer}"></footer>
+        </div>
+        <script th:src="@{/dist/js/selectize.min.js}"></script>
+        <script>
+            $(document).ready(function () {
+                $('select').selectize({
+                    
+                });
+            });
+            document.getElementById("quantity").addEventListener("input", count);
+            document.getElementById("untitPrice").addEventListener("input", count);
+            function count() {
+                var quantity = document.getElementById("quantity").value;
+                var untitPrice = document.getElementById("untitPrice").value;
+                document.getElementById("total").value = quantity * untitPrice;
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>                        
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="${#strings.capitalizeWords(module)}">Form</h3>
+                                </div>
+                                <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" role="form">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <input type="number" th:field="*{id}" class="form-control" id="id" style="display: none">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="number" th:field="*{hostel.id}" class="form-control" id="admin" style="display: none">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="history">Hostel Background</label>
+                                            <textarea type="text" th:field="*{history}" class="form-control" id="history" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="eduEnvironment">Environment for education</label>
+                                            <textarea type="text" th:field="*{eduEnvironment}" class="form-control" id="eduEnvironment" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="administration">Description of administration</label>
+                                            <textarea type="text" th:field="*{administration}" class="form-control" id="administration" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="security">Description of security</label>
+                                            <textarea type="text" th:field="*{security}" class="form-control" id="security" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="entertainment">Arrangements for entertainment</label>
+                                            <textarea type="text" th:field="*{entertainment}" class="form-control" id="entertainment" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="foodInfo">Description of food system</label>
+                                            <textarea type="text" th:field="*{foodInfo}" class="form-control" id="foodInfo" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="specialFacilities">Special Facilities</label>
+                                            <textarea type="text" th:field="*{specialFacilities}" class="form-control" id="specialFacilities" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="instructions">Instructions from the  Authority</label>
+                                            <textarea type="text" th:field="*{instructions}" class="form-control" id="instructions" ></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="facilities">Other facilities</label>
+                                            <textarea type="text" th:field="*{facilities}" class="form-control" id="facilities" ></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphat@gmail.com">yasiraraphatdu@gmail.com</a>.</strong> All rights reserved.
+            </footer>
+        </div>
+    </body>
+</html>
+

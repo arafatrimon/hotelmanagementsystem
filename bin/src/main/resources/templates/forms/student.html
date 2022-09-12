@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="row" th:if="${entity}">
+                        <div class="col-12">
+                            <div class="card">
+                                <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" enctype="multipart/form-data" role="form">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-9 col-md-10">
+                                                <div th:replace="~{fragments/shared/form-header :: header}"></div>
+                                            </div>
+                                            <div class="col-sm-3 col-md-2 center">
+                                                <img onclick="change()" id="blah" alt="Photo" th:src="@{/dist/img/upload_image.JPG}" class="img-fluid"/>
+                                                <input type="file" name="image" class="hide" id="photo">
+                                            </div>
+                                        </div>
+                                        <div class="form-group hide">
+                                            <input type="hidden" th:field="*{id}" class="form-control hide" id="id">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="seat">Room and Seat</label>
+                                            <select th:field="*{seat.id}" class="form-control" id="seat">
+                                                <option th:each="seat : ${mclist}" th:value="${seat.id}" 
+                                                        th:text="${seat.room.roomNo + ' - ' + seat.seatNo}"></option>
+                                            </select>
+                                            <span 
+                                                th:if="${#fields.hasErrors('seat.id')}" 
+                                                th:errors="*{seat.id}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="studentId" >Student ID</label>
+                                            <input type="text" th:field="*{studentId}" class="form-control" id="studentId" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('studentId')}" 
+                                                th:errors="*{studentId}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" >Name(In English)</label> 
+                                            <input type="text" th:field="*{name}" class="form-control" id="name" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('name')}" 
+                                                th:errors="*{name}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nameBangla" >Name(In Bangla)</label> 
+                                            <input type="text" th:field="*{nameBangla}" class="form-control" id="nameBangla"> 
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="fatherName" >Father's Name</label> 
+                                            <input type="text" th:field="*{fatherName}" class="form-control" id="fatherName" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('fatherName')}" 
+                                                th:errors="*{fatherName}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="motherName" >Mother's Name</label> 
+                                            <input type="text" th:field="*{motherName}" class="form-control" id="motherName" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('motherName')}" 
+                                                th:errors="*{motherName}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="parentOccupation" >Father's Occupation</label> 
+                                            <input type="text" th:field="*{parentOccupation}" class="form-control" id="parentOccupation">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="localGuardian" >Name of Local Guardian</label> 
+                                            <input type="text" th:field="*{localGuardian}" class="form-control" id="localGuardian" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('localGuardian')}" 
+                                                th:errors="*{localGuardian}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="relWithGuardian" >Relation with Local Guardian</label> 
+                                            <input type="text" th:field="*{relWithGuardian}" class="form-control" id="relWithGuardian" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('relWithGuardian')}" 
+                                                th:errors="*{relWithGuardian}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="localGuardianPhone" >Local Guardian's Phone</label> 
+                                            <input type="text" th:field="*{localGuardianPhone}" class="form-control" id="localGuardianPhone" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('localGuardianPhone')}" 
+                                                th:errors="*{localGuardianPhone}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="guardianAddress" >Local Guardian's Address</label> 
+                                            <input type="text" th:field="*{guardianAddress}" class="form-control" id="guardianAddress" required> 
+                                            <span 
+                                                th:if="${#fields.hasErrors('guardianAddress')}" 
+                                                th:errors="*{guardianAddress}"
+                                                class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <div>
+                                                <label for="gender" >Gender</label>
+                                            </div>
+                                            <div class="custom-control custom-radio d-inline">
+                                                <input type="radio" th:field="*{gender}" th:value="${'Male'}" class="custom-control-input">
+                                                <label th:for="${#ids.prev('gender')}" th:text="${'Male'}" class="custom-control-label">Male</label>
+                                            </div>
+                                            <div class="custom-control custom-radio d-inline">
+                                                <input type="radio" th:field="*{gender}" th:value="${'Female'}" class="custom-control-input">
+                                                <label th:for="${#ids.prev('gender')}" th:text="${'Female'}" class="custom-control-label">Female</label>
+                                            </div>
+                                            <div class="custom-control custom-radio d-inline">
+                                                <input type="radio" th:field="*{gender}" th:value="${'others'}" class="custom-control-input">
+                                                <label th:for="${#ids.prev('gender')}" th:text="${'Others'}" class="custom-control-label">Others</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phone" >Phone</label>
+                                            <input type="text" th:field="*{phone}" class="form-control" id="phone" placeholder="Phone Number" required>
+                                            <span th:if="${#fields.hasErrors('phone')}" 
+                                                  th:errors="*{phone}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email" >Email</label>
+                                            <input type="text" th:field="*{email}" class="form-control" id="email" 
+                                                   placeholder="student@example.com" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="presentAddress" >Current location</label> 
+                                            <textarea type="text" th:field="*{presentAddress}" class="form-control" id="presentAddress" required>
+                                            </textarea> 
+                                            <span th:if="${#fields.hasErrors('presentAddress')}" th:errors="*{presentAddress}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="permanentAddress" >Permanent Address</label> 
+                                            <textarea type="text" th:field="*{permanentAddress}" class="form-control" id="permanentAddress" required>
+                                            </textarea> 
+                                            <span th:if="${#fields.hasErrors('permanentAddress')}" th:errors="*{permanentAddress}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="sscGroup" >SSC Group</label> 
+                                            <input type="text" th:field="*{sscGroup}" class="form-control" id="sscGroup" required>
+                                            <span th:if="${#fields.hasErrors('sscGroup')}" th:errors="*{sscGroup}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="sscGpa" >SSC Result (In GPA)</label> 
+                                            <input type="number" th:field="*{sscGpa}" class="form-control" id="sscGpa" min="2" max="5" step="0.01" required>
+                                            <span th:if="${#fields.hasErrors('sscGpa')}" th:errors="*{sscGpa}" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="sscPassYear" >SSC Passing Year</label> 
+                                            <input type="number" th:field="*{sscPassYear}" class="form-control" id="sscPassYear" 
+                                                   min="2000" max="2099" required>
+                                            <span th:if="${#fields.hasErrors('sscPassYear')}" th:errors="*{sscPassYear}" class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="school" >Previous Academy</label> 
+                                            <input type="text" th:field="*{school}" class="form-control" id="school" 
+                                                   placeholder="Name of previous educational institute" required> 
+                                            <span th:if="${#fields.hasErrors('school')}" th:errors="*{school}" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="presentInstitute" >Present Academy</label> 
+                                            <input type="text" th:field="*{presentInstitute}" class="form-control" id="presentInstitute" 
+                                                   placeholder="Name of present educational institute" required> 
+                                            <span th:if="${#fields.hasErrors('presentInstitute')}" th:errors="*{presentInstitute}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="classTeacherName" >Name of Class Teacher</label> 
+                                            <input type="text" th:field="*{classTeacherName}" class="form-control" id="classTeacherName" required> 
+                                            <span th:if="${#fields.hasErrors('classTeacherName')}" th:errors="*{classTeacherName}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="classTeacherPhone" >Phone No. of Class Teacher</label> 
+                                            <input type="text" th:field="*{classTeacherPhone}" class="form-control" id="classTeacherPhone" required> 
+                                            <span th:if="${#fields.hasErrors('classTeacherPhone')}" th:errors="*{classTeacherPhone}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="currentSubject" >Current Group/Subject</label> 
+                                            <input type="text" th:field="*{currentSubject}" class="form-control" id="currentSubject" 
+                                                   placeholder="Science/Business Studies/Humanities" required> 
+                                            <span th:if="${#fields.hasErrors('currentSubject')}" th:errors="*{currentSubject}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="batchNo" >Batch no.</label> 
+                                            <input type="text" th:field="*{batchNo}" class="form-control" id="batchNo" required> 
+                                            <span th:if="${#fields.hasErrors('batchNo')}" th:errors="*{batchNo}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="dateOfBirth" >Date of Birth</label> 
+                                            <input type="date" th:field="*{dateOfBirth}" class="form-control" id="dateOfBirth" required>
+                                            <span th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bloodGroup" >Blood Group</label> 
+                                            <input type="text" th:field="*{bloodGroup}" class="form-control" id="bloodGroup" required>
+                                            <span th:if="${#fields.hasErrors('bloodGroup')}" th:errors="*{bloodGroup}" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nationality" >Nationality</label> 
+                                            <input type="text" th:field="*{nationality}" class="form-control" id="nationality" 
+                                                   placeholder="example - Bangladeshi" required>
+                                            <span th:if="${#fields.hasErrors('nationality')}" th:errors="*{nationality}" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="nationalId" >NID/Birth Certificate Number</label>
+                                            <input type="text" th:field="*{nationalId}" class="form-control" id="nationalId" placeholder="NID Number" required> 
+                                            <span th:if="${#fields.hasErrors('nationalId')}" th:errors="*{nationalId}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="passportNo" >Passport No.</label>
+                                            <input type="text" th:field="*{passportNo}" class="form-control" id="passportNo">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="fatherPhone">Father's Phone no.</label>
+                                            <input type="text" th:field="*{fatherPhone}" class="form-control" id="fatherPhone" required> 
+                                            <span th:if="${#fields.hasErrors('fatherPhone')}" th:errors="*{fatherPhone}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="motherPhone" >Mother's Phone no.</label> 
+                                            <input type="text" th:field="*{motherPhone}" class="form-control" id="motherPhone"> 
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="monthlyFee" >Monthly Fee</label> 
+                                            <input type="number" th:field="*{monthlyFee}" class="form-control" id="monthlyFee"> 
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="admissionDate" >Date of Admission</label>
+                                            <input type="date" th:field="*{admissionDate}" class="form-control" id="admissionDate">
+                                            <span th:if="${#fields.hasErrors('admissionDate')}" th:errors="*{admissionDate}"
+                                                  class="text-danger">
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input  th:field="*{isActive}" type="checkbox" class="custom-control-input" >
+                                                <label th:for="${#ids.prev('isActive')}" class="custom-control-label">Student stays in hostel</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="submit" id="submit" class="btn btn-primary" value="Submit">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphat@gmail.com">yasiraraphatdu@gmail.com</a>.</strong> 
+                All rights reserved.
+            </footer>
+        </div>
+        <script th:src="@{/dist/js/bs-custom-file-input.min.js}"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                bsCustomFileInput.init();
+
+            });
+            var fileInput = document.getElementById('photo');
+            fileInput.addEventListener("change", preview);
+            function preview() {
+                if (fileInput.files && fileInput.files[0]) {
+                    document.getElementById('blah').src = window.URL.createObjectURL(fileInput.files[0]);
+                } else {
+                    document.getElementById('blah').src = "/dist/img/upload_image.JPG";
+                }
+            }
+            function change() {
+                fileInput.click();
+            }
+        </script>
+    </body>
+</html>

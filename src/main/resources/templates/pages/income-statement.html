@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head> 
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <link th:if="${data}" rel="stylesheet" th:href="@{/dist/css/jquery.dataTables.min.css}">
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="container">
+                        <div class="row mb-20">  
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Hostel Income Statement</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="year" >Select year</label>
+                                                <input type="number" class="form-control" id="hostelYear" name="year" min="2000" max="2099" required>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="button" id="hostelHtml" class="btn btn-primary">Generate</button>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Branch Income Statement</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="year" >Select year</label>
+                                                <input type="number" class="form-control" id="branchYear" name="year" min="2000" max="2099" required>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="button" id="branchHtml" class="btn btn-primary">Generate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <embed id="embedPdf" src="" type="application/pdf" width="100%" height="600px" />
+                            </div>
+                        </div>
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> All rights reserved.
+            </footer>
+        </div>
+
+        <script th:inline="javascript">
+            document.getElementById("branchHtml").addEventListener("click", function (event) {
+                event.preventDefault();
+                let year = document.getElementById("branchYear").value;
+                getPdfReport("/report/generate", "branch", year);
+            });
+            document.getElementById("hostelHtml").addEventListener("click", function (event) {
+                event.preventDefault();
+                let year = document.getElementById("hostelYear").value;
+                getPdfReport("/report/generate", "hostel", year);
+            });
+//            document.getElementById("branchPdf").addEventListener("click", function (event) {
+//                event.preventDefault();
+//                let year = document.getElementById("branchYear").value;
+//                downloadPdfReport("/report/income_statement", "branch", "Branch_Income_Statement.pdf", year);
+//            });
+//            document.getElementById("hostelPdf").addEventListener("click", function (event) {
+//                event.preventDefault();
+//                let year = document.getElementById("hostelYear").value;
+//                downloadPdfReport("/report/income_statement", "hostel", "Hostel_Income_Statement.pdf", year);
+//            });
+//            function downloadPdfReport(url, scope, reportName, year) {
+//                var request = new XMLHttpRequest();
+//                request.onreadystatechange = function () {
+//                    if (this.readyState === 4 && this.status === 200) {
+//                        var filename = "";
+//                        var disposition = request.getResponseHeader('Content-Disposition');
+//                        if (disposition && disposition.indexOf('attachment') !== -1) {
+//                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+//                            var matches = filenameRegex.exec(disposition);
+//                            if (matches !== null && matches[1])
+//                                filename = matches[1].replace(/['"]/g, '');
+//                        }
+//                        var type = request.getResponseHeader('Content-Type');
+//                        console.log(type);
+//                        var blob;
+//                        if (typeof File === 'function') {
+//                            try {
+//                                blob = new File([this.response], filename, {type: type});
+//                            } catch (e) { /* Edge */
+//                            }
+//                        }
+//                        if (typeof blob === 'undefined') {
+//                            blob = new Blob([this.response], {type: type});
+//                        }
+//                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+//                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+//                            window.navigator.msSaveBlob(blob, filename);
+//                        } else {
+//                            var URL = window.URL || window.webkitURL;
+//                            var downloadUrl = URL.createObjectURL(blob);
+//                            if (filename) {
+//                                // use HTML5 a[download] attribute to specify filename
+//                                var a = document.createElement("a");
+//                                // safari doesn't support this yet
+//                                if (typeof a.download === 'undefined') {
+//                                    window.location.href = downloadUrl;
+//                                } else {
+//                                    a.href = downloadUrl;
+//                                    a.download = new Date().getTime() + reportName; //filename
+//                                    document.body.appendChild(a);
+//                                    a.click();
+//                                    document.body.removeChild(a);
+//                                }
+//                            } else {
+//                                window.location.href = downloadUrl;
+//                            }
+//
+//                        }
+//                    }
+//                };
+//                url += "?year=" + year + "&type=pdf&scope=" + scope;
+//                request.open("POST", url, true);
+//                request.responseType = "blob";
+//                request.setRequestHeader("Content-type", "application/x-download");
+//                request.send();
+//            }
+
+            function getPdfReport(url, scope, year) {
+                console.log("Entered method");
+                var request = new XMLHttpRequest();
+                url += "?year=" + year + "&type=is&scope=" + scope;
+                request.open("POST", url, true);
+                request.responseType = "blob";
+                request.setRequestHeader("Content-type", "application/pdf");
+                request.setRequestHeader([(${'"' + _csrf.headerName + '"'})], [(${'"' + _csrf.token + '"'})]);
+                request.send();
+                request.onload = function () {
+                    console.log("Response received");
+                    var file = window.URL.createObjectURL(this.response);
+                    document.getElementById("embedPdf").src = file;
+                };
+            }
+        </script>
+    </body>
+</html>

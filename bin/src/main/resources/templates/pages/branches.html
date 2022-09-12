@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>        
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <th:block th:if="${entities}">
+                        <div class="row">
+                            <th:block th:each="branch : ${entities}">
+                                <div class="col-lg-3 col-6">
+                                    <a th:href="@{'/branch/'+${branch.id}}">
+                                        <div class="small-box bg-info">
+                                            <div class="inner">
+                                                <h4 th:text="${branch.name}">Branch Name</h4>
+                                                <p th:text="${branch.phone}">Branch Phone</p>
+                                            </div>
+                                            <div class="icon">
+                                                <i class="fas fa-building"></i>
+                                            </div>
+                                            <p class="small-box-footer">
+                                                Select <i class="fas fa-arrow-circle-right"></i>
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </th:block>
+                        </div>
+                    </th:block>
+
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer th:replace="~{fragments/shared/footer :: footer}"></footer>
+        </div>
+
+
+    </body>
+</html>

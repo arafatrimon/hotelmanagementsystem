@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head> 
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <link th:if="${data}" rel="stylesheet" th:href="@{/dist/css/jquery.dataTables.min.css}">
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+
+                    <div class="row">  
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div th:if="${data}" class="col-12 table-responsive">
+                                        <div th:replace="~{fragments/table :: dataTable(${data})}"></div>
+                                    </div>
+                                    <!--                                    <div th:if="${fieldBasedData}" class="col-12 table-responsive">
+                                                                            <div th:replace="~{fragments/field_based_table :: table(${fieldBasedData})}"></div>
+                                                                        </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> All rights reserved.
+            </footer>
+        </div>
+
+    <th:block th:if="${data}">
+        <script th:src="@{/dist/js/jquery.dataTables.min.js}"></script>
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                $('#listTable').DataTable({
+                    "ordering": [(${!(module == 'Food Menu')})]
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

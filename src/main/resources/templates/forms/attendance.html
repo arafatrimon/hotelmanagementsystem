@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+        <link rel="stylesheet" th:href="@{/dist/css/selectize.bootstrap3.min.css}">
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- Main content -->
+                <section class="content">
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="${#strings.capitalizeWords(module)}">Form</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form action="#" th:action="@{${action}}" th:object="${entity}" method="post" role="form">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <input type="text" th:field="*{id}" class="form-control" id="id" style="display: none">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="student">Select a Student</label>
+                                                <select th:field="*{student.id}" class="form-control" id="student" placeholder="Select a student">
+                                                    <option th:each="student : ${mclist}" th:value="${student.id}" th:text="${student}"
+                                                            th:selected="${entity.student.id == student.id}"></option>
+                                                </select>
+                                                <span 
+                                                    th:if="${#fields.hasErrors('student.id')}" 
+                                                    th:errors="*{student.id}"
+                                                    class="text-danger">
+                                                </span>
+                                            </div>
+                                            <div th:if="${entity.id}" class="form-group">
+                                                <label for="date">Date</label>
+                                                <input type="date" th:field="*{date}" class="form-control" id="date">
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="checkbox" th:field="*{isPresent}" class="custom-control-input" checked>
+                                                    <label th:for="${#ids.prev('isPresent')}" class="custom-control-label" id="present-label">Present</label>
+                                                </div>
+                                            </div>
+<!--                                            <div class="form-group">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" th:field="*{isPresent}" value="true"  class="custom-control-input" checked>
+                                                    <label th:for="${#ids.prev('isPresent')}" class="custom-control-label">Present</label>
+                                                </div>
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" th:field="*{isPresent}" value="false" class="custom-control-input" >
+                                                    <label th:for="${#ids.prev('isPresent')}" class="custom-control-label">Absent</label>
+                                                </div>
+                                            </div>-->
+                                            <div class="form-group" id="cause" th:classappend="${entity.causeOfAbsence != null ? '' : 'hide'}">
+                                                <label for="causeOfAbsence">Cause of Absence</label>
+                                                <textarea th:field="*{causeOfAbsence}" class="form-control" id="causeOfAbsence" ></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-white">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer th:replace="~{fragments/shared/footer :: footer}"></footer>
+        </div>
+        <script th:src="@{/dist/js/selectize.min.js}"></script>
+        <script>
+            $(document).ready(function () {
+                $('select').selectize();
+                hideUnhide();
+            });
+            document.getElementById('isPresent1').addEventListener("click", hideUnhide);
+//            document.getElementById('isPresent2').addEventListener("click", hideUnhide);
+//            function hideUnhide() {
+//                var cls = document.getElementById('cause').classList;
+//                var absent = document.getElementById('isPresent2');
+//                if (absent.checked) {
+//                    cls.remove('hide');
+//                } else {
+//                    cls.add('hide');
+//                }
+//            }
+            function hideUnhide() {
+                var cls = document.getElementById('cause').classList;
+                var label = document.getElementById('present-label');
+                var present = document.getElementById('isPresent1');
+                if (!present.checked) {
+                    label.innerHTML = "Absent";
+                    cls.remove('hide');
+                } else {
+                    label.innerHTML = "Present";
+                    cls.add('hide');
+                }
+            }
+        </script>
+    </body>
+</html>

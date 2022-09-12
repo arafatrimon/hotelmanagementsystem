@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <div th:fragment="table(data)">
+            <table class="table table-bordered table-primary" th:with="
+                   headers = ${data.get('headers')},
+                   rows = ${data.get('rows')},
+                   ids = ${data.get('ids')},
+                   class = ${data.get('class')}
+                   ">
+                <thead style="text-align: center">
+                    <tr>
+                        <th th:each="header: ${headers}" th:if="${header != 'id'}" th:text="${#strings.capitalizeWords(header)}" />
+                    </tr>
+                </thead>
+                </tbody>
+                <tbody>
+                    <tr th:each="row : ${rows}" class="even pointer">
+                        <td th:each="value : ${row}" th:text="${#strings.capitalize(value)}"></td>
+                    <tr>
+                </tbody>
+                <tfoot style="text-align: center">
+                    <tr class="even pointer">
+                        <td>Action</td>
+                        <td th:each="id : ${ids}">                            
+                            <a class="btn btn-info btn-sm" 
+                               th:href="@{'/'+${class}+'/update/'+${id}}">
+                                <i class="fas fa-pencil-alt">
+                                </i>
+                                Edit
+                            </a>
+                            <a class="btn btn-danger btn-sm" 
+                               th:href="@{'/'+${class}+'/delete/'+${id}}">
+                                <i class="fas fa-trash">
+                                </i>
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </body>
+</html>

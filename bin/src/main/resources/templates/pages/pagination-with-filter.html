@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <!--/*/ <th:block th:include="fragments/shared/dashboard-links.html :: links">
+        </th:block> /*/-->
+    </head>
+    <body class="hold-transition sidebar-mini">
+        <div class="wrapper" th:with="group = ${session.userRole}">
+            <div th:replace="~{fragments/shared/header :: header}"></div>
+            <th:block th:if="${group == 'ROLE_ADMIN'}">
+                <div th:replace="~{fragments/shared/sidebar :: sidebar}"></div>
+            </th:block>            
+            <th:block th:if="${group == 'ROLE_MANAGER'}">
+                <div th:replace="~{fragments/shared/msidebar :: sidebar}"></div>
+            </th:block>                   
+            <!--Page content starts-->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div th:replace="~{fragments/shared/pageheader :: context}"></div>
+                <!-- /.container-fluid -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <!--Dynamic contents starts-->
+                    <div th:if="${message}" class="row">
+                        <div th:replace="~{fragments/message :: message}"></div>                        
+                    </div>
+                    <div th:if="${data}" class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!--Filter Nav starts-->
+                                    <nav class="navbar navbar-light bg-light" th:with="
+                                         size = ${size != null} ? ${size} : 10,
+                                         searchParam = ${searchParam != null} ? ${searchParam} : '',
+                                         startDate = ${startDate != null} ? ${startDate} : '',
+                                         endDate = ${endDate != null} ? ${endDate} : '',
+                                         sortCriteria = ${sortCriteria != null} ? ${sortCriteria} : '',
+                                         sortDirection = ${sortDirection != null} ? ${sortDirection} : ''
+                                         ">
+                                        <form class="form-inline" action="#" th:action="@{'/'+${data.get('class')}+'/filter'}" method="get">
+                                            <input class="hide" type="hidden" name="searchParam" th:value="${searchParam}">
+                                            <input class="hide" type="hidden" name="size" th:value="${size}">
+                                            <input class="hide" type="hidden" name="sortCriteria" th:value="${sortCriteria}">
+                                            <input class="hide" type="hidden" name="sortDirection" th:value="${sortDirection}">
+                                            <select name="filterText" class="form-control mr-sm-2" id="filter" >
+                                                <option value="" >Filter by</option>
+                                                <th:block th:if="${mcIdExists}">
+                                                    <option th:each="item : ${mclist}" th:value="${item.id}" 
+                                                            th:text="${item}" th:selected="${item.id == filterText}"></option>
+                                                </th:block>
+                                                <th:block th:if="${!mcIdExists}" >
+                                                    <option th:each="item : ${mclist}"  th:value="${item}" th:text="${item}" 
+                                                            th:selected="${item == filterText}"></option>
+                                                </th:block>
+                                            </select>
+                                            <label style="padding-right: 5px" for="start">From</label>
+                                            <input class="form-control mr-sm-2" type="date" name="startDate" id="start" 
+                                                   th:value="${startDate}" placeholder="From" aria-label="From">
+                                            <label style="padding-right: 5px" for="end">To</label>
+                                            <input class="form-control mr-sm-2" type="date" name="endDate" placeholder="To" aria-label="To" 
+                                                   th:value="${endDate}">
+                                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Filter</button>
+                                        </form>
+                                    </nav>
+                                    <div class="container">
+                                        <div th:replace="~{fragments/pagination-table :: table}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Dynamic contents end-->
+                </section>
+            </div>
+            <!--Page content starts-->
+            <footer class="main-footer">
+                <div class="float-right d-none d-sm-block">
+                    <b>Hostel Management System</b> Version 1.0.0
+                </div>
+                <strong>For any query, mail at <a href="mailto:yasiraraphatdu@gmail.com">yasiraraphat@gmail.com</a>.</strong> 
+                All rights reserved.
+            </footer>
+        </div>
+    </body>
+</html>

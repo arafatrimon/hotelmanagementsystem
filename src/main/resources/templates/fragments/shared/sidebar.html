@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+    </head>
+    <body>
+        <aside th:fragment="sidebar" class="main-sidebar sidebar-dark-primary elevation-4" 
+               th:with="branchId = ${session.branchId}, userRole = ${session.userRole}, hostelName = ${session.hostelName}">
+            <!--Hostel Logo--> 
+            <a th:href="@{'/dashboard'}" class="brand-link" th:if="${hostelName == null}">
+                <img th:src="@{'/dist/img/hostel.gif'}" class="brand-image img-circle elevation-3">
+                <span class="brand-text font-weight-light" >Hostel Management</span>
+            </a>
+            <a th:href="@{'/dashboard'}" class="brand-link" th:if="${hostelName}">
+                <img th:src="@{'/uploads/'+${session.hostelLogo}}" class="brand-image img-circle elevation-3">
+                <span class="brand-text font-weight-light" th:text="${hostelName}"></span>
+            </a>
+            <!--Sidebar--> 
+            <div class="sidebar" th:if="${session.userName}">
+                <!--Sidebar Menu--> 
+                <nav class="mt-2"  th:if="${userRole == 'ROLE_ADMIN'}">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Use .nav-icon class for every sidebar icon -->
+                        <li  class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>
+                                    Hostels
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" >   
+                                <li class="nav-item">
+                                    <a th:href="@{'/hostel/form/'}" class="nav-link">
+                                        <i class="nav-icon fas fa-plus-square"></i>
+                                        <p>Add Hostel</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a th:href="@{'/hostel/display'}" class="nav-link">
+                                        <i class="nav-icon fa fa-check-square"></i>
+                                        <p>Select hostel</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a th:href="@{'/hostel/'}" class="nav-link">
+                                        <i class="nav-icon fas fa-th-list"></i>
+                                        <p>View Hostels</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <th:block th:if="${hostelName}">
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-building"></i>
+                                    <p>
+                                        Hostel Details
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview" >
+                                    <li class="nav-item">
+                                        <a th:href="@{'/hostelinfo/form'}" class="nav-link">
+                                            <i class="nav-icon fas fa-plus-square"></i>
+                                            <p>Update Details</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a th:href="@{'/hostelinfo/'}" class="nav-link">
+                                            <i class="nav-icon fas fa-th-list"></i>
+                                            <p>View Details</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li  class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-building"></i>
+                                    <p>
+                                        Branches
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview" >   
+                                    <li class="nav-item">
+                                        <a th:href="@{'/branch/form'}" class="nav-link">
+                                            <i class="nav-icon fas fa-plus-square"></i>
+                                            <p>Add Branch</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a th:href="@{'/branch/display'}" class="nav-link">
+                                            <i class="nav-icon fa fa-check-square"></i>
+                                            <p>Select Branch</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a th:href="@{'/branch/'}" class="nav-link">
+                                            <i class="nav-icon fas fa-th-list"></i>
+                                            <p>View Branchs</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <th:block th:if="${session.branchName}">                                
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Generate Report
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >
+                                        <li class="nav-item">
+                                            <a th:href="@{'/report/income_statement'}" class="nav-link">
+                                                <i class="nav-icon fa fa-file"></i>
+                                                <p>Income Statement</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/report/balance_sheet'}" class="nav-link">
+                                                <i class="nav-icon fa fa-file"></i>
+                                                <p>Balance Sheet</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Rooms
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/room/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Add Room</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/room/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>View Rooms</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Seats
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/seat/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Add Seat</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/seat/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>View Seats</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Bazar Management
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/bazaritems/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Add Category</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/bazaritems/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>All Categories</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/bazar/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Bazar Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/bazar/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Bazar List</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Bills
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/bills/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Bills Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/bills/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Bills List</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/electricitybills/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Electricity Bill Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/electricitybills/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Electricity Bills</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Monthly Cost
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/cost/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Cost Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/cost/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Cost List</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Cash Management
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/deposit/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Cash Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/deposit/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Cash Entry History</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Managers
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >
+                                        <li class="nav-item">
+                                            <a th:href="@{'/employee/form/manager'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Register Manager</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/employee/manager/active'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Current Managers</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/employee/manager/inactive'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Previous Managers</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Employees
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >
+                                        <li class="nav-item">
+                                            <a th:href="@{'/employee/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Register Employee</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/employee/active'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Current Employees</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/employee/inactive'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Previous Employees</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Students
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >
+                                        <li class="nav-item">
+                                            <a th:href="@{'/student/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Register Student</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/student/active'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Current Students</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/student/inactive'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Previous Students</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Salary
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >
+                                        <li class="nav-item">
+                                            <a th:href="@{'/salary/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Pay Salary</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/salary/active'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Current Employee Salaries</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/salary/inactive'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Previous Employee Salaries</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Student's Payments
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview" >   
+                                        <li class="nav-item">
+                                            <a th:href="@{'/studentpayment/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Student's Fees Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/studentpayment/active'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Current Student's Fees</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/studentpayment/inactive'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Previous Student's Fees</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Attendance
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/attendance/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Attendance Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/attendance/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Attendance List</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Fees
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/fees/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Fees Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/fees/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Fees List</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Food Menu
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/foodmenu/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Food Menu Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/foodmenu/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>View Food Menu</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Meal
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/meal/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Meal Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/meal/today'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>Today's Meals</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/meal/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>All Meals</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Notice
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/notice/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Notice Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/notice/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>All Notices</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Achievements
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/achievements/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Achievement Entry</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/achievements/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>All Achievements</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Hostel Galary
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/hostelgalary/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Upload Photo(s)</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/hostelgalary/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>View Galary</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li  class="nav-item has-treeview">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Branch Galary
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a th:href="@{'/branchgalary/form'}" class="nav-link">
+                                                <i class="nav-icon fas fa-plus-square"></i>
+                                                <p>Upload Photo(s)</p>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a th:href="@{'/branchgalary/'}" class="nav-link">
+                                                <i class="nav-icon fas fa-th-list"></i>
+                                                <p>View Galary</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </th:block>
+                        </th:block>
+                    </ul>
+                </nav>
+                <!--/.sidebar-menu--> 
+            </div>
+        </aside>
+    </body>
+</html>

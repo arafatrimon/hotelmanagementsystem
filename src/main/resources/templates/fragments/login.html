@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Home</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    </head>
+    <body>
+        <div th:fragment="userLogin">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div th:if="${entity}" class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Sign In</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form action="#" th:action="@{${action}}" th:object="${entity}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <div class="card-body">
+                                <div th:if="${message}" th:text="${message}" class="text-success text-center"></div>
+                                <div th:if="${error}" th:text="${error}" class="text-success text-center"></div>
+                                <div class="form-group">
+                                    <label for="username" >Username or Email</label>
+                                    <input type="text" th:field="*{username}" class="form-control" id="username" placeholder="Username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password" >Password</label>
+                                    <input type="password" th:field="*{password}" class="form-control" id="phoneNo" placeholder="Password"> 
+                                </div>
+                                <button type="submit" class="btn btn-info">Sign in</button>
+                                <div class="p-1 text-center">
+                                    <p>Don't have an account? <a href="/register"> Sign Up</a></p>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>                        
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+            </div>
+            <div th:if="${entity == null}"><h4 style="color: red">Something went wrong. Please Login or Sign Up again.</h4></div>
+        </div>
+
+    </body>
+</html>
